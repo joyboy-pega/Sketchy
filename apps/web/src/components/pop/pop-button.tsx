@@ -3,6 +3,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import clsx from 'clsx';
+import { playClickSound } from '@/lib/sound-fx';
 
 const popButtonVariants = cva(
   [
@@ -55,20 +56,23 @@ export interface PopButtonProps
   children: ReactNode;
 }
 
-/**
- * The button primitive for the whole app (design-party-pop.md §5.1). A real
- * `<button>`; the label is a plain DOM text node so it stays selectable,
- * translatable and screen-reader visible.
- */
 export const PopButton = forwardRef<HTMLButtonElement, PopButtonProps>(function PopButton(
-  { children, className, variant, size, type = 'button', ...props },
+  { children, className, variant, size, type = 'button', onClick, ...props },
   ref,
 ) {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    playClickSound();
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
     <button
       ref={ref}
       type={type}
       className={clsx(popButtonVariants({ variant, size }), className)}
+      onClick={handleClick}
       {...props}
     >
       {children}

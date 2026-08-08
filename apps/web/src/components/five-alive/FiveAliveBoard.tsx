@@ -3,6 +3,14 @@
 import React, { useState } from 'react';
 import type { FiveAliveCard, FiveAliveGameState, FiveAlivePlayer } from '@sketchy/engine';
 import { playCard, startFiveAliveGame } from '@sketchy/engine';
+import { PopButton } from '@/components/pop/pop-button';
+import { PopCard } from '@/components/pop/pop-card';
+import {
+  playCardPlaySound,
+  playClickSound,
+  playLifeLossSound,
+  playRoundWinSound,
+} from '@/lib/sound-fx';
 
 export function FiveAliveBoard() {
   const [gameState, setGameState] = useState<FiveAliveGameState>(() =>
@@ -20,11 +28,20 @@ export function FiveAliveBoard() {
   const handlePlayCard = (cardId: string) => {
     if (!gameState.currentTurnPlayerId) return;
 
+    playCardPlaySound();
+
     const nextState = playCard(
       gameState,
       gameState.currentTurnPlayerId,
       cardId,
     );
+
+    if (nextState.winnerId) {
+      playRoundWinSound();
+    } else if (nextState.message?.includes('lost a life')) {
+      playLifeLossSound();
+    }
+
     setGameState(nextState);
     setSelectedCardId(null);
 
@@ -55,7 +72,15 @@ export function FiveAliveBoard() {
       cardToPlay = bot.hand[0]!;
     }
 
+    playCardPlaySound();
     const afterBotState = playCard(state, activeBotId, cardToPlay.id);
+
+    if (afterBotState.winnerId) {
+      playRoundWinSound();
+    } else if (afterBotState.message?.includes('lost a life')) {
+      playLifeLossSound();
+    }
+
     setGameState(afterBotState);
 
     if (
@@ -70,6 +95,7 @@ export function FiveAliveBoard() {
   };
 
   const handleRestart = () => {
+    playClickSound();
     const freshGame = startFiveAliveGame([
       { id: 'p1', name: 'You (Player 1)' },
       { id: 'p2', name: 'Bot Bob' },
@@ -79,78 +105,90 @@ export function FiveAliveBoard() {
     setSelectedCardId(null);
   };
 
-  const getCardColorClass = (type: string, value?: number) => {
+  const getCardStyle = (type: string, value?: number) => {
     switch (type) {
       case 'five_alive':
-        return 'bg-gradient-to-br from-emerald-500 to-teal-700 text-white shadow-emerald-500/30';
+        return 'bg-highlight text-ink border-3 border-ink shadow-hard font-display';
       case 'set_21':
-        return 'bg-gradient-to-br from-amber-500 to-red-600 text-white shadow-amber-500/30';
+        return 'bg-undercover text-paper-2 border-3 border-ink shadow-hard font-display';
       case 'skip':
       case 'reverse':
       case 'pass':
-        return 'bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-blue-500/30';
+        return 'bg-civilian text-paper-2 border-3 border-ink shadow-hard font-display';
       case 'bomb':
-        return 'bg-gradient-to-br from-purple-600 to-pink-700 text-white shadow-purple-500/30';
+        return 'bg-mrwhite text-paper-2 border-3 border-ink shadow-hard font-display';
       default:
         if ((value ?? 0) >= 5) {
-          return 'bg-gradient-to-br from-rose-500 to-red-700 text-white shadow-rose-500/30';
+          return 'bg-phase-reveal text-ink border-3 border-ink shadow-hard font-display';
         }
-        return 'bg-gradient-to-br from-slate-700 to-slate-900 text-slate-100 border border-slate-600';
+        return 'bg-paper-2 text-ink border-3 border-ink shadow-hard font-display';
     }
   };
 
+  const CARD_TILTS = ['-rotate-1', 'rotate-1', '-rotate-2', 'rotate-2', 'rotate-0'];
+
   return (
-    <div className="w-full max-w-4xl mx-auto p-4 md:p-6 bg-slate-950 text-white rounded-3xl shadow-2xl border border-slate-800 space-y-6">
-      <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+    <div className="w-full max-w-4xl mx-auto p-4 md:p-6 bg-paper text-ink space-y-6">
+      {/* Header bar */}
+      <PopCard className="flex items-center justify-between p-4 -rotate-1 bg-paper-2">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-rose-500 to-purple-500">
-            5 ALIVE
-          </h1>
-          <p className="text-xs text-slate-400">
+          <div className="flex items-center space-x-2">
+            <span className="inline-block rounded-lg border-3 border-ink bg-highlight px-2 py-0.5 font-display text-xs uppercase tracking-wide text-ink shadow-hard-sm">
+              PARTY POP
+            </span>
+            <h1 className="font-display text-3xl uppercase tracking-wide text-ink sm:text-4xl">
+              5 ALIVE
+            </h1>
+          </div>
+          <p className="font-ui text-xs font-bold text-graphite mt-1">
             Keep running total ≤ 21 or lose a life!
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <span className="text-xs font-semibold px-3 py-1 bg-slate-800 rounded-full text-slate-300">
+          <span className="font-ui text-xs font-bold uppercase tracking-[0.14em] px-3 py-1.5 bg-phase-vote border-3 border-ink rounded-lg shadow-hard-sm text-ink">
             Round {gameState.round}
           </span>
-          <button
-            onClick={handleRestart}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition shadow-lg shadow-indigo-600/30 active:scale-95"
-          >
+          <PopButton variant="primary" size="md" onClick={handleRestart}>
             New Game
-          </button>
+          </PopButton>
         </div>
-      </div>
+      </PopCard>
 
-      <div className="grid grid-cols-3 gap-3">
-        {gameState.players.map((p: FiveAlivePlayer) => {
+      {/* Players Roster */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {gameState.players.map((p: FiveAlivePlayer, index: number) => {
           const isTurn = p.id === gameState.currentTurnPlayerId;
+          const tilt = CARD_TILTS[index % CARD_TILTS.length];
+
           return (
             <div
               key={p.id}
-              className={`p-3 rounded-2xl border transition-all duration-300 ${
+              className={`p-3.5 rounded-xl border-3 border-ink transition-all duration-200 ${tilt} ${
                 isTurn
-                  ? 'bg-indigo-950/60 border-indigo-500 ring-2 ring-indigo-500/50 scale-105'
-                  : 'bg-slate-900/60 border-slate-800'
+                  ? 'bg-highlight shadow-hard scale-[1.02] z-10'
+                  : 'bg-paper-2 shadow-hard-sm'
               } ${p.isEliminated ? 'opacity-40 grayscale' : ''}`}
             >
               <div className="flex items-center justify-between">
-                <span className="font-bold text-sm truncate">{p.name}</span>
+                <span className="font-ui font-bold text-base text-ink truncate">
+                  {p.name}
+                </span>
                 {isTurn && (
-                  <span className="text-[10px] bg-indigo-500 text-white px-2 py-0.5 rounded-full font-extrabold animate-pulse">
+                  <span className="font-ui text-[11px] font-extrabold uppercase tracking-[0.08em] bg-ink text-highlight px-2 py-0.5 rounded-lg border-2 border-ink shadow-hard-sm">
                     TURN
                   </span>
                 )}
               </div>
-              <div className="mt-2 flex items-center justify-between text-xs">
-                <span className="text-slate-400">Lives:</span>
+              <div className="mt-2 flex items-center justify-between text-xs font-ui">
+                <span className="font-bold text-graphite">LIVES:</span>
                 <div className="flex space-x-1">
                   {Array.from({ length: 5 }).map((_, idx) => (
                     <span
                       key={idx}
                       className={
-                        idx < p.lives ? 'text-red-500' : 'text-slate-700'
+                        idx < p.lives
+                          ? 'text-undercover text-sm'
+                          : 'text-graphite/40 text-sm'
                       }
                     >
                       ❤️
@@ -158,7 +196,7 @@ export function FiveAliveBoard() {
                   ))}
                 </div>
               </div>
-              <div className="mt-1 text-[11px] text-slate-400">
+              <div className="mt-1 font-ui text-[11px] font-bold text-graphite uppercase tracking-wider">
                 Cards left: {p.hand.length}
               </div>
             </div>
@@ -166,63 +204,68 @@ export function FiveAliveBoard() {
         })}
       </div>
 
-      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-center space-y-4 relative overflow-hidden">
-        <div className="absolute top-3 left-4 text-xs font-semibold text-slate-400 flex items-center space-x-1">
+      {/* Center Arena - Running Total */}
+      <div className="relative bg-paper-2 border-3 border-ink rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center space-y-5 shadow-hard-lg overflow-hidden dots">
+        <div className="absolute top-3 left-4 font-ui text-xs font-bold uppercase tracking-[0.14em] text-ink flex items-center space-x-1">
           <span>Direction:</span>
-          <span className="text-indigo-400 font-bold">
+          <span className="bg-highlight px-2.5 py-0.5 rounded-lg border-2 border-ink font-extrabold shadow-hard-sm">
             {gameState.direction === 'cw' ? '↻ Clockwise' : '↺ Counter-Clockwise'}
           </span>
         </div>
 
-        <div className="relative flex flex-col items-center justify-center">
+        <div className="relative flex flex-col items-center justify-center pt-4">
           <div
-            className={`w-32 h-32 rounded-full flex flex-col items-center justify-center border-4 shadow-2xl transition-all duration-500 ${
+            className={`w-36 h-36 rounded-full border-3 border-ink flex flex-col items-center justify-center shadow-hard transition-transform duration-300 ${
               gameState.runningTotal > 18
-                ? 'border-red-500 bg-red-950/40 text-red-400 shadow-red-500/40 animate-bounce'
+                ? 'bg-phase-reveal text-ink pnp-pop-in'
                 : gameState.runningTotal > 14
-                ? 'border-amber-500 bg-amber-950/40 text-amber-400 shadow-amber-500/30'
-                : 'border-emerald-500 bg-emerald-950/40 text-emerald-400 shadow-emerald-500/30'
+                ? 'bg-phase-vote text-ink'
+                : 'bg-phase-discuss text-ink'
             }`}
           >
-            <span className="text-xs uppercase font-extrabold tracking-widest text-slate-400">
+            <span className="font-ui text-xs font-bold uppercase tracking-[0.14em] text-graphite">
               TOTAL
             </span>
-            <span className="text-4xl font-black">{gameState.runningTotal}</span>
-            <span className="text-[10px] text-slate-500 font-bold">/ 21</span>
+            <span className="font-display text-5xl uppercase tracking-wide text-ink">
+              {gameState.runningTotal}
+            </span>
+            <span className="font-ui text-xs font-bold text-graphite">/ 21</span>
           </div>
         </div>
 
         {gameState.message && (
-          <div className="text-center text-sm font-semibold text-indigo-300 bg-indigo-950/50 border border-indigo-800/50 px-4 py-1.5 rounded-full max-w-md">
+          <div className="font-ui text-sm font-bold text-ink bg-highlight border-3 border-ink px-4 py-1.5 rounded-xl shadow-hard-sm max-w-md text-center">
             {gameState.message}
           </div>
         )}
 
         {gameState.winnerId && (
-          <div className="p-4 bg-gradient-to-r from-amber-500 via-rose-500 to-purple-600 text-white rounded-2xl text-center font-black text-xl shadow-xl w-full max-w-md animate-pulse">
-            🎉 Winner:{' '}
+          <div className="pnp-slam p-4 bg-highlight border-3 border-ink text-ink rounded-2xl text-center font-display text-2xl uppercase tracking-wide shadow-hard-lg w-full max-w-md -rotate-1">
+            🎉 WINNER:{' '}
             {gameState.players.find((p: FiveAlivePlayer) => p.id === gameState.winnerId)?.name}!
           </div>
         )}
       </div>
 
+      {/* Player Hand Section */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-extrabold text-slate-300">
-            YOUR HAND ({userPlayer.hand.length} Cards)
+          <h2 className="font-ui text-xs font-bold uppercase tracking-[0.14em] text-ink">
+            YOUR HAND ({userPlayer.hand.length} CARDS)
           </h2>
           {gameState.currentTurnPlayerId === 'p1' && !gameState.winnerId && (
-            <span className="text-xs text-emerald-400 font-bold animate-pulse">
-              ★ Your turn! Click a card to play.
+            <span className="font-ui text-xs font-bold uppercase tracking-wider text-civilian bg-highlight px-3 py-1 rounded-lg border-2 border-ink shadow-hard-sm">
+              ★ YOUR TURN! SELECT A CARD
             </span>
           )}
         </div>
 
-        <div className="flex flex-wrap gap-2.5 justify-center sm:justify-start">
-          {userPlayer.hand.map((card: FiveAliveCard) => {
+        <div className="flex flex-wrap gap-3 justify-center sm:justify-start">
+          {userPlayer.hand.map((card: FiveAliveCard, index: number) => {
             const isSelected = selectedCardId === card.id;
             const canPlay =
               gameState.currentTurnPlayerId === 'p1' && !gameState.winnerId;
+            const cardTilt = CARD_TILTS[index % CARD_TILTS.length];
 
             return (
               <button
@@ -232,20 +275,20 @@ export function FiveAliveBoard() {
                   setSelectedCardId(card.id);
                   handlePlayCard(card.id);
                 }}
-                className={`w-20 h-28 rounded-2xl p-2 flex flex-col justify-between items-center transition-all duration-200 shadow-lg cursor-pointer transform hover:-translate-y-2 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed ${getCardColorClass(
+                className={`w-24 h-32 rounded-xl p-2.5 flex flex-col justify-between items-center transition-all duration-150 cursor-pointer transform hover:-translate-y-1 hover:rotate-0 active:translate-x-1 active:translate-y-1 disabled:opacity-40 disabled:cursor-not-allowed ${getCardStyle(
                   card.type,
                   card.value,
-                )} ${
-                  isSelected ? 'ring-4 ring-white scale-110 -translate-y-2' : ''
+                )} ${cardTilt} ${
+                  isSelected ? 'ring-4 ring-ink scale-105 shadow-hard-lg' : ''
                 }`}
               >
-                <span className="text-xs font-black self-start">
+                <span className="font-display text-xs uppercase self-start">
                   {card.label}
                 </span>
-                <span className="text-2xl font-black">
+                <span className="font-display text-3xl uppercase">
                   {card.type === 'number' ? card.value : '★'}
                 </span>
-                <span className="text-[9px] font-bold uppercase tracking-wider self-end opacity-75">
+                <span className="font-ui text-[9px] font-bold uppercase tracking-wider self-end opacity-90">
                   {card.type.replace('_', ' ')}
                 </span>
               </button>
