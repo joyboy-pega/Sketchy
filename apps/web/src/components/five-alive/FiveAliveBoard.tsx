@@ -5,6 +5,7 @@ import type { FiveAliveCard, FiveAliveGameState, FiveAlivePlayer } from '@sketch
 import { playCard, startFiveAliveGame } from '@sketchy/engine';
 import { PopButton } from '@/components/pop/pop-button';
 import { PopCard } from '@/components/pop/pop-card';
+import { PopDialog } from '@/components/pop/pop-dialog';
 import {
   playCardPlaySound,
   playClickSound,
@@ -22,6 +23,7 @@ export function FiveAliveBoard() {
   );
 
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+  const [isRulesOpen, setIsRulesOpen] = useState<boolean>(false);
 
   const userPlayer = gameState.players[0]!;
 
@@ -145,14 +147,92 @@ export function FiveAliveBoard() {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <span className="font-ui text-xs font-bold uppercase tracking-[0.14em] px-3 py-1.5 bg-phase-vote border-3 border-ink rounded-lg shadow-hard-sm text-ink">
+          <span className="font-ui text-xs font-bold uppercase tracking-[0.14em] px-3 py-1.5 bg-phase-vote border-3 border-ink rounded-lg shadow-hard-sm text-ink hidden sm:inline-block">
             Round {gameState.round}
           </span>
+          <PopButton
+            variant="secondary"
+            size="md"
+            onClick={() => {
+              playClickSound();
+              setIsRulesOpen(true);
+            }}
+          >
+            Rules
+          </PopButton>
           <PopButton variant="primary" size="md" onClick={handleRestart}>
             New Game
           </PopButton>
         </div>
       </PopCard>
+
+      {/* Rules Dialog Modal */}
+      <PopDialog
+        open={isRulesOpen}
+        onOpenChange={setIsRulesOpen}
+        title="5 ALIVE RULES"
+        description="How to play 5 Alive card game:"
+        closeLabel="Close Rules"
+      >
+        <div className="space-y-4 font-ui text-sm text-ink max-h-[60vh] overflow-y-auto pr-1">
+          <div className="p-3 bg-phase-discuss border-3 border-ink rounded-xl shadow-hard-sm">
+            <h3 className="font-display text-base uppercase text-ink">🎯 Objective</h3>
+            <p className="mt-1 text-xs font-semibold text-graphite">
+              Keep the running total at or below **21**. If your card pushes the total over 21, you lose 1 life (❤️). Eliminate all opponents to win!
+            </p>
+          </div>
+
+          <div className="p-3 bg-phase-vote border-3 border-ink rounded-xl shadow-hard-sm">
+            <h3 className="font-display text-base uppercase text-ink">🃏 Playing Cards</h3>
+            <ul className="mt-1 space-y-1 text-xs font-semibold text-graphite list-disc list-inside">
+              <li>**Number Cards (0–7)**: Add their face value to the running total.</li>
+              <li>**Winning a Round**: Play your last card to empty your hand! All other active players lose 1 life, and a new round begins.</li>
+            </ul>
+          </div>
+
+          <div className="p-3 bg-phase-reveal border-3 border-ink rounded-xl shadow-hard-sm space-y-2">
+            <h3 className="font-display text-base uppercase text-ink">⚡ Action Cards</h3>
+            <div className="grid grid-cols-1 gap-1.5 text-xs font-semibold">
+              <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
+                <span className="font-display text-highlight font-black">★ 5 ALIVE</span>
+                <span>Resets running total to 0</span>
+              </div>
+              <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
+                <span className="font-display text-undercover font-black">★ = 21</span>
+                <span>Sets running total to 21</span>
+              </div>
+              <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
+                <span className="font-display text-civilian font-black">★ SKIP</span>
+                <span>Skips next player turn</span>
+              </div>
+              <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
+                <span className="font-display text-civilian font-black">★ REVERSE</span>
+                <span>Flips direction of play</span>
+              </div>
+              <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
+                <span className="font-display text-civilian font-black">★ PASS</span>
+                <span>Passes turn without adding</span>
+              </div>
+              <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
+                <span className="font-display text-mrwhite font-black">★ BOMB</span>
+                <span>Discards hand card or lose life</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 flex justify-end">
+          <PopButton
+            variant="primary"
+            size="md"
+            onClick={() => {
+              playClickSound();
+              setIsRulesOpen(false);
+            }}
+          >
+            Got It!
+          </PopButton>
+        </div>
+      </PopDialog>
 
       {/* Players Roster */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
