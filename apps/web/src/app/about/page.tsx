@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { BreadcrumbJsonLd } from '@/components/marketing/breadcrumb-json-ld';
 import { MarketingPageShell } from '@/components/marketing/marketing-page-shell';
+import { PopCard } from '@/components/pop/pop-card';
 import { copy } from '@/copy';
 
 export const metadata: Metadata = {
@@ -20,27 +21,35 @@ export const metadata: Metadata = {
   },
 };
 
-/**
- * `/about` — brand story (arch/copy.md §16.3). Fully static
- * Server Component: no client JS needed for a page of prose.
- */
 export default function AboutPage() {
   return (
     <MarketingPageShell>
       <BreadcrumbJsonLd pageName={copy.marketing.about.meta.title} path="/about" />
-      <h1 className="font-display text-3xl uppercase tracking-wide text-ink">
-        {copy.marketing.about.title}
-      </h1>
-      <div className="flex flex-col gap-5">
-        {copy.marketing.about.paragraphs.map((paragraph) => (
-          <p key={paragraph} className="font-ui text-base text-graphite">
-            {paragraph}
+
+      <PopCard className="p-6 md:p-8 bg-paper-2 border-3 border-ink shadow-hard-lg space-y-6">
+        <div className="space-y-2 border-b-3 border-ink pb-4">
+          <span className="inline-block rounded-lg border-3 border-ink bg-highlight px-3 py-1 font-display text-xs uppercase tracking-wide text-ink shadow-hard-sm">
+            OUR STORY
+          </span>
+          <h1 className="font-display text-3xl sm:text-4xl uppercase tracking-wide text-ink">
+            {copy.marketing.about.title}
+          </h1>
+        </div>
+
+        <div className="flex flex-col gap-4 font-ui text-base font-semibold text-graphite leading-relaxed">
+          {copy.marketing.about.paragraphs.map((paragraph) => (
+            <p key={paragraph} className="bg-paper border-2 border-ink p-4 rounded-xl shadow-hard-sm text-ink">
+              {paragraph}
+            </p>
+          ))}
+        </div>
+
+        <div className="p-4 bg-phase-vote border-3 border-ink rounded-xl shadow-hard-sm">
+          <p className="font-display text-sm uppercase tracking-wide text-ink">
+            {copy.marketing.about.closingLine}
           </p>
-        ))}
-      </div>
-      <p className="font-ui text-sm font-medium italic text-ink">
-        {copy.marketing.about.closingLine}
-      </p>
+        </div>
+      </PopCard>
     </MarketingPageShell>
   );
 }
