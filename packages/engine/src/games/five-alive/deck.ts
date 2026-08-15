@@ -26,12 +26,12 @@ export function createFiveAliveDeck(): FiveAliveCard[] {
     });
   }
 
-  // 5 Alive - Reset total to 0 (4 copies)
+  // 5 Hearts - Reset total to 0 (4 copies)
   for (let i = 0; i < 4; i++) {
     cards.push({
       id: `card-${cardId++}`,
       type: 'five_alive',
-      label: '5 ALIVE (Reset 0)',
+      label: '5 HEARTS (Reset 0)',
     });
   }
 

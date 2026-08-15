@@ -40,7 +40,7 @@ export function FiveAliveBoard() {
 
     if (nextState.winnerId) {
       playRoundWinSound();
-    } else if (nextState.message?.includes('lost a life')) {
+    } else if (nextState.message?.includes('lost 1 heart') || nextState.message?.includes('lost a life')) {
       playLifeLossSound();
     }
 
@@ -79,7 +79,7 @@ export function FiveAliveBoard() {
 
     if (afterBotState.winnerId) {
       playRoundWinSound();
-    } else if (afterBotState.message?.includes('lost a life')) {
+    } else if (afterBotState.message?.includes('lost 1 heart') || afterBotState.message?.includes('lost a life')) {
       playLifeLossSound();
     }
 
@@ -136,14 +136,14 @@ export function FiveAliveBoard() {
         <div>
           <div className="flex items-center space-x-2">
             <span className="inline-block rounded-lg border-3 border-ink bg-highlight px-2 py-0.5 font-display text-xs uppercase tracking-wide text-ink shadow-hard-sm">
-              PARTY POP
+              ❤️ 5 HEARTS GAME
             </span>
             <h1 className="font-display text-3xl uppercase tracking-wide text-ink sm:text-4xl">
-              5 ALIVE
+              5 HEARTS
             </h1>
           </div>
           <p className="font-ui text-xs font-bold text-graphite mt-1">
-            Keep running total ≤ 21 or lose a life!
+            Keep running total ≤ 21 or lose a heart! Last player with hearts wins.
           </p>
         </div>
         <div className="flex items-center space-x-3">
@@ -170,15 +170,15 @@ export function FiveAliveBoard() {
       <PopDialog
         open={isRulesOpen}
         onOpenChange={setIsRulesOpen}
-        title="5 ALIVE RULES"
-        description="How to play 5 Alive card game:"
+        title="5 HEARTS RULES"
+        description="How to play 5 Hearts card game:"
         closeLabel="Close Rules"
       >
         <div className="space-y-4 font-ui text-sm text-ink max-h-[60vh] overflow-y-auto pr-1">
           <div className="p-3 bg-phase-discuss border-3 border-ink rounded-xl shadow-hard-sm">
             <h3 className="font-display text-base uppercase text-ink">🎯 Objective</h3>
             <p className="mt-1 text-xs font-semibold text-graphite">
-              Keep the running total at or below **21**. If your card pushes the total over 21, you lose 1 life (❤️). Eliminate all opponents to win!
+              Every player starts with **5 Hearts (❤️❤️❤️❤️❤️)**. Keep the running total at or below **21**. If your card pushes the total over 21, you lose 1 heart (💔). Eliminate all opponents to win!
             </p>
           </div>
 
@@ -186,7 +186,7 @@ export function FiveAliveBoard() {
             <h3 className="font-display text-base uppercase text-ink">🃏 Playing Cards</h3>
             <ul className="mt-1 space-y-1 text-xs font-semibold text-graphite list-disc list-inside">
               <li>**Number Cards (0–7)**: Add their face value to the running total.</li>
-              <li>**Winning a Round**: Play your last card to empty your hand! All other active players lose 1 life, and a new round begins.</li>
+              <li>**Emptying Your Hand**: Play all cards in your hand to win the round! All other active players lose 1 heart (💔), and a new round begins.</li>
             </ul>
           </div>
 
@@ -194,7 +194,7 @@ export function FiveAliveBoard() {
             <h3 className="font-display text-base uppercase text-ink">⚡ Action Cards</h3>
             <div className="grid grid-cols-1 gap-1.5 text-xs font-semibold">
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
-                <span className="font-display text-highlight font-black">★ 5 ALIVE</span>
+                <span className="font-display text-highlight font-black">★ 5 HEARTS</span>
                 <span>Resets running total to 0</span>
               </div>
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
@@ -215,7 +215,7 @@ export function FiveAliveBoard() {
               </div>
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
                 <span className="font-display text-mrwhite font-black">★ BOMB</span>
-                <span>Discards hand card or lose life</span>
+                <span>Reduces running total by 5</span>
               </div>
             </div>
           </div>
@@ -259,25 +259,39 @@ export function FiveAliveBoard() {
                   </span>
                 )}
               </div>
-              <div className="mt-2 flex items-center justify-between text-xs font-ui">
-                <span className="font-bold text-graphite">LIVES:</span>
-                <div className="flex space-x-1">
+              <div className="mt-2.5 p-2 bg-paper rounded-lg border-2 border-ink shadow-hard-sm">
+                <div className="flex items-center justify-between text-xs font-ui mb-1">
+                  <span className="font-bold text-ink flex items-center gap-1">
+                    <span>HEARTS:</span>
+                    <span className="text-[11px] font-extrabold px-1.5 py-0.2 bg-highlight rounded border border-ink">
+                      {p.lives}/5
+                    </span>
+                  </span>
+                  {p.isEliminated && (
+                    <span className="text-[10px] font-extrabold uppercase text-undercover">
+                      OUT 💀
+                    </span>
+                  )}
+                </div>
+                <div className="flex justify-between items-center px-1">
                   {Array.from({ length: 5 }).map((_, idx) => (
                     <span
                       key={idx}
-                      className={
+                      className={`text-base transition-transform duration-200 ${
                         idx < p.lives
-                          ? 'text-undercover text-sm'
-                          : 'text-graphite/40 text-sm'
-                      }
+                          ? 'animate-pulse scale-110 drop-shadow-sm'
+                          : 'opacity-30 grayscale'
+                      }`}
+                      title={idx < p.lives ? 'Active Heart' : 'Lost Heart'}
                     >
-                      ❤️
+                      {idx < p.lives ? '❤️' : '💔'}
                     </span>
                   ))}
                 </div>
               </div>
-              <div className="mt-1 font-ui text-[11px] font-bold text-graphite uppercase tracking-wider">
-                Cards left: {p.hand.length}
+              <div className="mt-2 font-ui text-[11px] font-bold text-graphite uppercase tracking-wider flex justify-between">
+                <span>Cards in hand:</span>
+                <span className="font-extrabold text-ink">{p.hand.length}</span>
               </div>
             </div>
           );

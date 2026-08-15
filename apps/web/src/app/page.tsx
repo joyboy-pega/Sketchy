@@ -4,8 +4,8 @@ import { SiteFooter } from '@/components/marketing/site-footer';
 import { SiteHeader } from '@/components/marketing/site-header';
 
 export const metadata: Metadata = {
-  title: 'Sketchy Arcade Console — 5 Alive & Party Games',
-  description: 'Multi-game arcade console featuring 5 Alive card game and upcoming party games!',
+  title: 'Sketchy Arcade Console — 5 Hearts Party Game',
+  description: 'Multi-game arcade console featuring 5 Hearts card game and exciting party games!',
 };
 
 export default function HomePage() {

@@ -20,8 +20,8 @@ interface GameItem {
 const ARCADE_GAMES: GameItem[] = [
   {
     id: 'five-alive',
-    title: '5 ALIVE',
-    subtitle: 'Keep running total ≤ 21 or lose a life! Fast-paced card elimination.',
+    title: '5 HEARTS',
+    subtitle: 'Keep running total ≤ 21 or lose a heart! Fast-paced 5-heart card elimination.',
     tag: 'FEATURED GAME',
     isAvailable: true,
     color: 'bg-highlight',
