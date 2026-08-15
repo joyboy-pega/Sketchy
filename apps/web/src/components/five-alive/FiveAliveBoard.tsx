@@ -3,6 +3,14 @@
 import React, { useState } from 'react';
 import type { FiveAliveCard, FiveAliveGameState, FiveAlivePlayer } from '@sketchy/engine';
 import { playCard, startFiveAliveGame } from '@sketchy/engine';
+import { IconCards } from '@/components/icons/icon-cards';
+import { IconHeart } from '@/components/icons/icon-heart';
+import { IconHeartCrack } from '@/components/icons/icon-heart-crack';
+import { IconRefresh } from '@/components/icons/icon-refresh';
+import { IconSkull } from '@/components/icons/icon-skull';
+import { IconTarget } from '@/components/icons/icon-target';
+import { IconTrophy } from '@/components/icons/icon-trophy';
+import { IconZap } from '@/components/icons/icon-zap';
 import { PopButton } from '@/components/pop/pop-button';
 import { PopCard } from '@/components/pop/pop-card';
 import { PopDialog } from '@/components/pop/pop-dialog';
@@ -135,8 +143,9 @@ export function FiveAliveBoard() {
       <PopCard className="flex items-center justify-between p-4 -rotate-1 bg-paper-2">
         <div>
           <div className="flex items-center space-x-2">
-            <span className="inline-block rounded-lg border-3 border-ink bg-highlight px-2 py-0.5 font-display text-xs uppercase tracking-wide text-ink shadow-hard-sm">
-              ❤️ 5 HEARTS GAME
+            <span className="inline-flex items-center gap-1 rounded-lg border-3 border-ink bg-highlight px-2 py-0.5 font-display text-xs uppercase tracking-wide text-ink shadow-hard-sm">
+              <IconHeart className="w-3.5 h-3.5 fill-ink text-ink" />
+              5 HEARTS GAME
             </span>
             <h1 className="font-display text-3xl uppercase tracking-wide text-ink sm:text-4xl">
               5 HEARTS
@@ -175,46 +184,55 @@ export function FiveAliveBoard() {
         closeLabel="Close Rules"
       >
         <div className="space-y-4 font-ui text-sm text-ink max-h-[60vh] overflow-y-auto pr-1">
-          <div className="p-3 bg-phase-discuss border-3 border-ink rounded-xl shadow-hard-sm">
-            <h3 className="font-display text-base uppercase text-ink">🎯 Objective</h3>
-            <p className="mt-1 text-xs font-semibold text-graphite">
-              Every player starts with **5 Hearts (❤️❤️❤️❤️❤️)**. Keep the running total at or below **21**. If your card pushes the total over 21, you lose 1 heart (💔). Eliminate all opponents to win!
+          <div className="p-3 bg-phase-discuss border-3 border-ink rounded-xl shadow-hard-sm space-y-1">
+            <div className="flex items-center gap-1.5">
+              <IconTarget className="w-4 h-4 text-ink" />
+              <h3 className="font-display text-base uppercase text-ink">Objective</h3>
+            </div>
+            <p className="text-xs font-semibold text-graphite">
+              Every player starts with **5 Hearts**. Keep the running total at or below **21**. If your card pushes the total over 21, you lose 1 heart. Eliminate all opponents to win!
             </p>
           </div>
 
-          <div className="p-3 bg-phase-vote border-3 border-ink rounded-xl shadow-hard-sm">
-            <h3 className="font-display text-base uppercase text-ink">🃏 Playing Cards</h3>
-            <ul className="mt-1 space-y-1 text-xs font-semibold text-graphite list-disc list-inside">
+          <div className="p-3 bg-phase-vote border-3 border-ink rounded-xl shadow-hard-sm space-y-1">
+            <div className="flex items-center gap-1.5">
+              <IconCards className="w-4 h-4 text-ink" />
+              <h3 className="font-display text-base uppercase text-ink">Playing Cards</h3>
+            </div>
+            <ul className="space-y-1 text-xs font-semibold text-graphite list-disc list-inside">
               <li>**Number Cards (0–7)**: Add their face value to the running total.</li>
-              <li>**Emptying Your Hand**: Play all cards in your hand to win the round! All other active players lose 1 heart (💔), and a new round begins.</li>
+              <li>**Emptying Your Hand**: Play all cards in your hand to win the round! All other active players lose 1 heart, and a new round begins.</li>
             </ul>
           </div>
 
           <div className="p-3 bg-phase-reveal border-3 border-ink rounded-xl shadow-hard-sm space-y-2">
-            <h3 className="font-display text-base uppercase text-ink">⚡ Action Cards</h3>
+            <div className="flex items-center gap-1.5">
+              <IconZap className="w-4 h-4 text-ink" />
+              <h3 className="font-display text-base uppercase text-ink">Action Cards</h3>
+            </div>
             <div className="grid grid-cols-1 gap-1.5 text-xs font-semibold">
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
-                <span className="font-display text-highlight font-black">★ 5 HEARTS</span>
+                <span className="font-display text-highlight font-black">5 HEARTS</span>
                 <span>Resets running total to 0</span>
               </div>
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
-                <span className="font-display text-undercover font-black">★ = 21</span>
+                <span className="font-display text-undercover font-black">= 21</span>
                 <span>Sets running total to 21</span>
               </div>
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
-                <span className="font-display text-civilian font-black">★ SKIP</span>
+                <span className="font-display text-civilian font-black">SKIP</span>
                 <span>Skips next player turn</span>
               </div>
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
-                <span className="font-display text-civilian font-black">★ REVERSE</span>
+                <span className="font-display text-civilian font-black">REVERSE</span>
                 <span>Flips direction of play</span>
               </div>
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
-                <span className="font-display text-civilian font-black">★ PASS</span>
+                <span className="font-display text-civilian font-black">PASS</span>
                 <span>Passes turn without adding</span>
               </div>
               <div className="flex items-center justify-between bg-paper-2 border-2 border-ink p-1.5 rounded-lg">
-                <span className="font-display text-mrwhite font-black">★ BOMB</span>
+                <span className="font-display text-mrwhite font-black">BOMB</span>
                 <span>Reduces running total by 5</span>
               </div>
             </div>
@@ -260,7 +278,7 @@ export function FiveAliveBoard() {
                 )}
               </div>
               <div className="mt-2.5 p-2 bg-paper rounded-lg border-2 border-ink shadow-hard-sm">
-                <div className="flex items-center justify-between text-xs font-ui mb-1">
+                <div className="flex items-center justify-between text-xs font-ui mb-1.5">
                   <span className="font-bold text-ink flex items-center gap-1">
                     <span>HEARTS:</span>
                     <span className="text-[11px] font-extrabold px-1.5 py-0.2 bg-highlight rounded border border-ink">
@@ -268,25 +286,33 @@ export function FiveAliveBoard() {
                     </span>
                   </span>
                   {p.isEliminated && (
-                    <span className="text-[10px] font-extrabold uppercase text-undercover">
-                      OUT 💀
+                    <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase text-undercover">
+                      <IconSkull className="w-3 h-3 text-undercover" />
+                      OUT
                     </span>
                   )}
                 </div>
                 <div className="flex justify-between items-center px-1">
-                  {Array.from({ length: 5 }).map((_, idx) => (
-                    <span
-                      key={idx}
-                      className={`text-base transition-transform duration-200 ${
-                        idx < p.lives
-                          ? 'animate-pulse scale-110 drop-shadow-sm'
-                          : 'opacity-30 grayscale'
-                      }`}
-                      title={idx < p.lives ? 'Active Heart' : 'Lost Heart'}
-                    >
-                      {idx < p.lives ? '❤️' : '💔'}
-                    </span>
-                  ))}
+                  {Array.from({ length: 5 }).map((_, idx) => {
+                    const hasHeart = idx < p.lives;
+                    return (
+                      <span
+                        key={idx}
+                        className={`inline-flex items-center justify-center p-1 rounded-md transition-all duration-200 ${
+                          hasHeart
+                            ? 'bg-undercover/10 text-undercover'
+                            : 'bg-graphite/10 text-graphite/30'
+                        }`}
+                        title={hasHeart ? 'Active Heart' : 'Lost Heart'}
+                      >
+                        {hasHeart ? (
+                          <IconHeart className="w-4 h-4 fill-undercover text-ink stroke-[2.5]" />
+                        ) : (
+                          <IconHeartCrack className="w-4 h-4 fill-none text-graphite/40 stroke-[2]" />
+                        )}
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
               <div className="mt-2 font-ui text-[11px] font-bold text-graphite uppercase tracking-wider flex justify-between">
@@ -300,10 +326,11 @@ export function FiveAliveBoard() {
 
       {/* Center Arena - Running Total */}
       <div className="relative bg-paper-2 border-3 border-ink rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center space-y-5 shadow-hard-lg overflow-hidden dots">
-        <div className="absolute top-3 left-4 font-ui text-xs font-bold uppercase tracking-[0.14em] text-ink flex items-center space-x-1">
+        <div className="absolute top-3 left-4 font-ui text-xs font-bold uppercase tracking-[0.14em] text-ink flex items-center space-x-1.5">
           <span>Direction:</span>
-          <span className="bg-highlight px-2.5 py-0.5 rounded-lg border-2 border-ink font-extrabold shadow-hard-sm">
-            {gameState.direction === 'cw' ? '↻ Clockwise' : '↺ Counter-Clockwise'}
+          <span className="inline-flex items-center gap-1 bg-highlight px-2.5 py-0.5 rounded-lg border-2 border-ink font-extrabold shadow-hard-sm">
+            <IconRefresh className="w-3.5 h-3.5 text-ink" />
+            {gameState.direction === 'cw' ? 'Clockwise' : 'Counter-Clockwise'}
           </span>
         </div>
 
@@ -334,9 +361,12 @@ export function FiveAliveBoard() {
         )}
 
         {gameState.winnerId && (
-          <div className="pnp-slam p-4 bg-highlight border-3 border-ink text-ink rounded-2xl text-center font-display text-2xl uppercase tracking-wide shadow-hard-lg w-full max-w-md -rotate-1">
-            🎉 WINNER:{' '}
-            {gameState.players.find((p: FiveAlivePlayer) => p.id === gameState.winnerId)?.name}!
+          <div className="pnp-slam p-4 bg-highlight border-3 border-ink text-ink rounded-2xl text-center font-display text-2xl uppercase tracking-wide shadow-hard-lg w-full max-w-md -rotate-1 flex items-center justify-center gap-2">
+            <IconTrophy className="w-7 h-7 text-ink" />
+            <span>
+              WINNER:{' '}
+              {gameState.players.find((p: FiveAlivePlayer) => p.id === gameState.winnerId)?.name}!
+            </span>
           </div>
         )}
       </div>
@@ -348,8 +378,9 @@ export function FiveAliveBoard() {
             YOUR HAND ({userPlayer.hand.length} CARDS)
           </h2>
           {gameState.currentTurnPlayerId === 'p1' && !gameState.winnerId && (
-            <span className="font-ui text-xs font-bold uppercase tracking-wider text-civilian bg-highlight px-3 py-1 rounded-lg border-2 border-ink shadow-hard-sm">
-              ★ YOUR TURN! SELECT A CARD
+            <span className="inline-flex items-center gap-1 font-ui text-xs font-bold uppercase tracking-wider text-civilian bg-highlight px-3 py-1 rounded-lg border-2 border-ink shadow-hard-sm">
+              <IconZap className="w-3.5 h-3.5 text-civilian fill-civilian" />
+              YOUR TURN! SELECT A CARD
             </span>
           )}
         </div>
@@ -379,8 +410,14 @@ export function FiveAliveBoard() {
                 <span className="font-display text-xs uppercase self-start">
                   {card.label}
                 </span>
-                <span className="font-display text-3xl uppercase">
-                  {card.type === 'number' ? card.value : '★'}
+                <span className="font-display text-3xl uppercase flex items-center justify-center">
+                  {card.type === 'number' ? (
+                    card.value
+                  ) : card.type === 'five_alive' ? (
+                    <IconHeart className="w-7 h-7 fill-current" />
+                  ) : (
+                    <IconZap className="w-7 h-7 fill-current" />
+                  )}
                 </span>
                 <span className="font-ui text-[9px] font-bold uppercase tracking-wider self-end opacity-90">
                   {card.type.replace('_', ' ')}

@@ -5,6 +5,10 @@ import { PopButton } from '@/components/pop/pop-button';
 import { PopCard } from '@/components/pop/pop-card';
 import { PopDialog } from '@/components/pop/pop-dialog';
 import { FiveAliveBoard } from '@/components/five-alive/FiveAliveBoard';
+import { IconArrowLeft } from '@/components/icons/icon-arrow-left';
+import { IconGamepad } from '@/components/icons/icon-gamepad';
+import { IconQuestion } from '@/components/icons/icon-question';
+import { IconUsers } from '@/components/icons/icon-users';
 import { playClickSound } from '@/lib/sound-fx';
 
 interface GameItem {
@@ -68,10 +72,12 @@ export function ArcadeConsole() {
               setActiveScreen('console');
             }}
           >
-            ← BACK TO ARCADE
+            <IconArrowLeft className="w-4 h-4 mr-1 inline" />
+            BACK TO ARCADE
           </PopButton>
-          <span className="font-display text-sm uppercase tracking-wide text-ink bg-highlight border-3 border-ink px-3 py-1 rounded-lg shadow-hard-sm">
-            🎮 ARCADE CONSOLE
+          <span className="font-display text-sm uppercase tracking-wide text-ink bg-highlight border-3 border-ink px-3 py-1 rounded-lg shadow-hard-sm flex items-center gap-1.5">
+            <IconGamepad className="w-4 h-4 text-ink" />
+            ARCADE CONSOLE
           </span>
         </div>
         <FiveAliveBoard />
@@ -100,8 +106,8 @@ export function ArcadeConsole() {
               Select a game below to launch. Play against AI Bots locally or join online multiplayer!
             </p>
           </div>
-          <div className="flex items-center space-x-2 bg-phase-discuss border-3 border-ink p-3 rounded-xl shadow-hard-sm">
-            <span className="text-2xl">🕹️</span>
+          <div className="flex items-center space-x-3 bg-phase-discuss border-3 border-ink p-3 rounded-xl shadow-hard-sm">
+            <IconGamepad className="w-7 h-7 text-ink" />
             <div>
               <p className="font-display text-xs uppercase text-ink">1 GAME PLAYABLE</p>
               <p className="font-ui text-[11px] font-bold text-graphite">MORE COMING SOON</p>
@@ -152,8 +158,9 @@ export function ArcadeConsole() {
                     LAUNCH GAME ➔
                   </PopButton>
                 ) : (
-                  <span className="font-display text-xs uppercase tracking-wide text-graphite bg-paper-2/70 border-2 border-ink/40 px-3 py-2 rounded-xl">
-                    ❓ IN DEVELOPMENT
+                  <span className="font-display text-xs uppercase tracking-wide text-graphite bg-paper-2/70 border-2 border-ink/40 px-3 py-2 rounded-xl flex items-center gap-1.5">
+                    <IconQuestion className="w-3.5 h-3.5 text-graphite" />
+                    IN DEVELOPMENT
                   </span>
                 )}
               </div>
@@ -178,7 +185,7 @@ export function ArcadeConsole() {
           >
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xl">🤖</span>
+                <IconGamepad className="w-5 h-5 text-ink" />
                 <h3 className="font-display text-lg uppercase text-ink">PLAY VS AI BOTS</h3>
               </div>
               <p className="font-ui text-xs font-semibold text-graphite mt-1">
@@ -194,7 +201,7 @@ export function ArcadeConsole() {
           <div className="p-4 bg-paper-2 border-3 border-ink rounded-xl shadow-hard-sm opacity-70 cursor-not-allowed flex items-center justify-between">
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-xl">🌐</span>
+                <IconUsers className="w-5 h-5 text-ink" />
                 <h3 className="font-display text-lg uppercase text-ink">PLAY WITH FRIENDS</h3>
               </div>
               <p className="font-ui text-xs font-semibold text-graphite mt-1">

@@ -149,7 +149,7 @@ export function playCard(
 
   // 3. Check for Over 21 Heart Loss
   if (runningTotal > 21) {
-    message = `${player.name} went over 21 (${runningTotal}) and lost 1 heart! 💔`;
+    message = `${player.name} went over 21 (${runningTotal}) and lost 1 heart!`;
     const penalizedPlayers = updatedPlayers.map((p) => {
       if (p.id === playerId) {
         const newLives = p.lives - 1;
@@ -166,7 +166,7 @@ export function playCard(
         runningTotal: 0,
         players: penalizedPlayers,
         winnerId: winner ? winner.id : null,
-        message: winner ? `${winner.name} won 5 Hearts! 🎉` : 'Game Over!',
+        message: winner ? `${winner.name} won 5 Hearts!` : 'Game Over!',
       };
     }
 
@@ -179,7 +179,7 @@ export function playCard(
 
   // 4. Check for Hand Cleared (Player emptied hand -> Round Win)
   if (newHand.length === 0) {
-    message = `${player.name} emptied their hand! All other players lose 1 heart. 💔`;
+    message = `${player.name} emptied their hand! All other players lose 1 heart.`;
     const penalizedPlayers = updatedPlayers.map((p) => {
       if (p.id !== playerId && !p.isEliminated) {
         const newLives = p.lives - 1;
@@ -196,7 +196,7 @@ export function playCard(
         runningTotal: 0,
         players: penalizedPlayers,
         winnerId: winner ? winner.id : null,
-        message: winner ? `${winner.name} won 5 Hearts! 🎉` : 'Game Over!',
+        message: winner ? `${winner.name} won 5 Hearts!` : 'Game Over!',
       };
     }
 
